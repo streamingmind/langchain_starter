@@ -1,23 +1,4 @@
-from graph_rag_example_helpers.datasets.animals import fetch_documents
-animals = fetch_documents()
-
-import getpass
-import os
-
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
-from langchain_ollama import OllamaEmbeddings
-
-# embeddings = OllamaEmbeddings(
-#     model="bge-m3:latest",
-# )
-
-model = OllamaLLM(model="Qwen2.5-14B-Instruct-GGUF:latest")
-
-embeddings = OllamaEmbeddings(
-    model="bge-m3:latest",
-)
-
+from ollama import embeddings
 def embed():
     # Create a vector store with a sample text
     from langchain_core.vectorstores import InMemoryVectorStore
@@ -52,15 +33,6 @@ def embed():
     # two_vectors = embeddings.embed_documents([text, text2])
     # for vector in two_vectors:
     #     print(str(vector)[:100])  # Show the first 100 characters of the vector
-def simple_qa():
-    template = """Question: {question}
-
-    Answer: Let's think step by step."""
-    prompt = ChatPromptTemplate.from_template(template)
-
-    chain = prompt | model
-
-    print(chain.invoke({"question": "What is LangChain?"}))
 
 
 if __name__ == '__main__':
