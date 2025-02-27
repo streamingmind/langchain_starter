@@ -23,9 +23,10 @@ all_splits = text_splitter.split_documents(docs)
 # sys.exit(-1)
 
 client = QdrantClient(":memory:")
+client.delete_collection("test")
 client.create_collection(
     collection_name="test",
-    vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+    vectors_config=VectorParams(size=1024, distance=Distance.COSINE),
 )
 vector_store = QdrantVectorStore(
     client=client,
@@ -51,14 +52,16 @@ class State(TypedDict):
 # Define application steps
 def retrieve(state: State):
     retrieved_docs = vector_store.similarity_search(state["question"])
+    for doc in retrieved_docs:
+        print(doc.page_content)
     return {"context": retrieved_docs}
 
 
 def generate(state: State):
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     messages = prompt.invoke({"question": state["question"], "context": docs_content})
-    response = llm.invoke(messages)
-    return {"answer": response.content}
+    response = model.invoke(messages)
+    return {"answer": response}
 
 
 # Compile application and test
