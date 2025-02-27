@@ -5,6 +5,8 @@ import json
 
 from langchain import hub
 
+from langchain_openai.chat_models.base import BaseChatOpenAI
+
 from langchain_community.document_loaders import WebBaseLoader
 
 
