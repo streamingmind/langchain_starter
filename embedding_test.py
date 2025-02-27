@@ -1,7 +1,11 @@
-from ollama import embeddings
+#from local_ollama import embeddings
+
+from common import *
+from qwen import embeddings
+
 def embed():
     # Create a vector store with a sample text
-    from langchain_core.vectorstores import InMemoryVectorStore
+   
 
     text = "LangChain is the framework for building context-aware reasoning applications"
     
