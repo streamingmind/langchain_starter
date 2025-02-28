@@ -3,8 +3,7 @@
 
 from common import *
 from qdrant import *
-from local_ollama import model, embeddings
-
+from local_ollama import ollama_chatmodel, ollama_embeddings
 #
 # Load and chunk contents of the blog
 loader = WebBaseLoader(
@@ -31,15 +30,15 @@ client.create_collection(
 vector_store = QdrantVectorStore(
     client=client,
     collection_name="test",
-    embedding=embeddings,
+    embedding=ollama_embeddings,
 )
 
 # Index chunks
-#_ = vector_store.add_documents(documents=all_splits)
+_ = vector_store.add_documents(documents=all_splits)
 
 # Define prompt for question-answering
 prompt = hub.pull("rlm/rag-prompt")
-print(prompt)
+print("prompt:", prompt)
 
 
 # Define state for application
@@ -53,14 +52,14 @@ class State(TypedDict):
 def retrieve(state: State):
     retrieved_docs = vector_store.similarity_search(state["question"])
     for doc in retrieved_docs:
-        print(doc.page_content)
+        print("retrieved:", doc.page_content)
     return {"context": retrieved_docs}
 
 
 def generate(state: State):
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     messages = prompt.invoke({"question": state["question"], "context": docs_content})
-    response = model.invoke(messages)
+    response = ollama_chatmodel.invoke(messages)
     return {"answer": response}
 
 

@@ -2,7 +2,7 @@
 
 from common import *
 
-from qwen import embeddings, chat_model
+from qwen import qwen_embeddings, qwen_chatmodel
 from dataset import animals
 
 from graph_retriever.strategies import Eager
@@ -15,7 +15,7 @@ from langchain_graph_retriever import GraphRetriever
 
 vector_store = InMemoryVectorStore.from_documents(
     documents=animals,
-    embedding=embeddings,
+    embedding=qwen_embeddings,
 )
 
 traversal_retriever = GraphRetriever(
@@ -23,7 +23,6 @@ traversal_retriever = GraphRetriever(
     edges = [("habitat", "habitat"), ("origin", "origin")],
     strategy = Eager(k=5, start_k=1, max_depth=2),
 )
-
 
 def compare():
   results = traversal_retriever.invoke("what animals could be found near a capybara?")
@@ -57,7 +56,7 @@ def chain_invoke():
   chain = (
       {"context": traversal_retriever | format_docs, "question": RunnablePassthrough()}
       | prompt
-      | chat_model
+      | qwen_chatmodel
       | StrOutputParser()
   )
   

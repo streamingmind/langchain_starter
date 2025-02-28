@@ -1,12 +1,14 @@
 from common import *
-from local_ollama import model
+from local_ollama import ollama_chatmodel
+from qwen import qwen_chatmodel
+
 def simple_qa():
     template = """Question: {question}
 
     Answer: Let's think step by step."""
     prompt = ChatPromptTemplate.from_template(template)
 
-    chain = prompt | model
+    chain = prompt | ollama_chatmodel #qwen_chatmodel
 
     print(chain.invoke({"question": "What is LangChain?"}))
     
